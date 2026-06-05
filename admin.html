@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Admin RT05 - Full</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>body{margin:0;font-family:system-ui;background:#0f172a;color:#e2e8f0}header{background:#f97316;color:#000;padding:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center}.wrap{max-width:1200px;margin:auto;padding:16px}.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tab{padding:8px 14px;background:#1e293b;border-radius:8px;cursor:pointer}.tab.active{background:#f97316;color:#000;font-weight:700}.card{background:#1e293b;border-radius:12px;padding:16px;margin:12px 0;display:none}.card.active{display:block}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #334155}button{padding:6px 10px;background:#f97316;border:none;border-radius:6px;color:#000;font-weight:600;cursor:pointer;margin:2px}input,select,textarea{background:#0f172a;color:#fff;border:1px solid #334155;padding:6px;border-radius:6px;width:100%;box-sizing:border-box}#login{position:fixed;inset:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:99}.box{background:#1e293b;padding:24px;border-radius:12px;min-width:280px}</style></head><body>
+<div id="login"><div class="box"><h3>Admin RT05</h3><input id="pin" type="password" placeholder="PIN"><button onclick="if(pin.value==='0505'){login.style.display='none';loadAll()}" style="width:100%;margin-top:8px">Masuk</button></div></div>
+<header><span>Admin RT05 - Dashboard Lengkap</span><span id="saldoHead">Rp 0</span></header>
+<div class="wrap">
+<div class="tabs">
+<div class="tab active" onclick="showTab('warga')">Warga & Iuran</div>
+<div class="tab" onclick="showTab('keuangan')">Keuangan</div>
+<div class="tab" onclick="showTab('pengumuman')">Pengumuman</div>
+<div class="tab" onclick="showTab('surat')">Surat</div>
+<div class="tab" onclick="showTab('laporan')">Laporan</div>
+</div>
+
+<div id="tab-warga" class="card active">
+<b>Tambah Warga</b><div style="display:flex;gap:8px;margin:8px 0"><input id="wNama" placeholder="Nama"><input id="wRumah" placeholder="No Rumah"><input id="wWa" placeholder="WA"><button onclick="addWarga()">Tambah</button></div>
+<b>Daftar Warga</b><table id="tW"><thead><tr><th>Nama</th><th>Rumah</th><th>WA</th></tr></thead><tbody></tbody></table>
+<hr style="border-color:#334155;margin:16px 0">
+<b>Generate Tagihan</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><input id="periode" type="month" style="width:150px"><input id="jumlah" type="number" value="20000" style="width:120px"><select id="pilihWarga" style="width:180px"><option value="">-- Semua --</option></select><button onclick="genTagihan(false)">Semua</button><button onclick="genTagihan(true)" style="background:#22c55e">1 Orang</button></div>
+<b>Tagihan Belum Lunas</b><table id="tT"><thead><tr><th>Warga</th><th>Periode</th><th>Jumlah</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+<b>Riwayat Pembayaran</b><table id="tL"><thead><tr><th>Warga</th><th>Periode</th><th>Tanggal</th><th>Bukti</th></tr></thead><tbody></tbody></table>
+</div>
+
+<div id="tab-keuangan" class="card">
+<b>Tambah Transaksi</b><div style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr auto;gap:8px;margin:8px 0"><select id="kJenis"><option value="masuk">Masuk</option><option value="keluar">Keluar</option></select><input id="kJumlah" type="number" placeholder="Jumlah"><input id="kTanggal" type="date"><input id="kKet" placeholder="Keterangan"><button onclick="addKas()">Simpan</button></div>
+<table id="tK"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Jumlah</th><th>Keterangan</th><th>Bukti</th></tr></thead><tbody></tbody></table>
+</div>
+
+<div id="tab-pengumuman" class="card">
+<b>Buat Pengumuman</b><div style="display:grid;gap:8px;margin:8px 0"><input id="pJudul" placeholder="Judul"><select id="pKat"><option>Umum</option><option>Keuangan</option><option>Kegiatan</option><option>Darurat</option></select><textarea id="pIsi" rows="3" placeholder="Isi pengumuman"></textarea><button onclick="addPengumuman()">Posting</button></div>
+<table id="tP"><thead><tr><th>Tanggal</th><th>Judul</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+</div>
+
+<div id="tab-surat" class="card">
+<b>Pengajuan Surat Warga</b><table id="tS"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keperluan</th><th>Status</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+</div>
+
+<div id="tab-laporan" class="card">
+<b>Laporan Warga</b><table id="tLap"><thead><tr><th>Tanggal</th><th>Judul</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+</div>
+
+</div>
+<script>
+const sb=supabase.createClient('https://pivkaidaqnkmrpsymhdd.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpdmthaWRhcW5rbXJwc3ltaGRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NDkwNDYsImV4cCI6MjA5NTAyNTA0Nn0.j6-sGSYFLrq3B-1HOnlM5OPdgx9nwjgAl9_qBighWG8');
+function showTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));event.target.classList.add('active');document.getElementById('tab-'+n).classList.add('active')}
+async function loadAll(){loadWarga();loadKeuangan();loadPengumuman();loadSurat();loadLaporan();const k=await sb.from('v_ringkasan_keuangan').select('*').maybeSingle();if(k.data) saldoHead.textContent='Saldo: Rp '+(k.data.saldo_kas||0).toLocaleString('id-ID')}
+async function loadWarga(){const w=await sb.from('warga').select('*').order('nama');tW.querySelector('tbody').innerHTML=w.data.map(x=>`<tr><td>${x.nama}</td><td>${x.no_rumah||''}</td><td>${x.no_wa||''}</td></tr>`).join('');pilihWarga.innerHTML='<option value="">-- Semua --</option>'+w.data.map(x=>`<option value="${x.id}">${x.nama}</option>`).join('');const t=await sb.from('iuran_tagihan').select('*,warga(nama)').eq('status','belum').order('periode',{ascending:false});tT.querySelector('tbody').innerHTML=t.data.map(x=>`<tr><td>${x.warga?.nama}</td><td>${x.periode}</td><td>Rp ${x.jumlah.toLocaleString('id-ID')}</td><td><button onclick="lunas(${x.id})">Lunas</button> <button onclick="hapusTagihan(${x.id})" style="background:#dc2626">Hapus</button></td></tr>`).join('');const l=await sb.from('iuran_tagihan').select('*,warga(nama)').eq('status','lunas').order('tanggal_bayar',{ascending:false}).limit(30);tL.querySelector('tbody').innerHTML=l.data.map(x=>`<tr><td>${x.warga?.nama}</td><td>${x.periode}</td><td>${x.tanggal_bayar||''}</td><td>${x.bukti_url?`<a href="${x.bukti_url}" target="_blank">Lihat</a>`:'-'}</td></tr>`).join('')}
+async function addWarga(){await sb.from('warga').insert({nama:wNama.value,no_rumah:wRumah.value,no_wa:wWa.value});wNama.value='';loadWarga()}
+async function genTagihan(satu){const p=periode.value,j=+jumlah.value;if(!p)return alert('Pilih periode');if(satu){const id=pilihWarga.value;if(!id)return alert('Pilih warga');await sb.from('iuran_tagihan').insert({warga_id:id,periode:p,jumlah:j})}else{const w=await sb.from('warga').select('id');await sb.from('iuran_tagihan').insert(w.data.map(v=>({warga_id:v.id,periode:p,jumlah:j})))}loadWarga()}
+async function lunas(id){const {data:t}=await sb.from('iuran_tagihan').select('*,warga(nama)').eq('id',id).single();const {data:k}=await sb.from('kas_transaksi').insert({kategori_id:1,jumlah:t.jumlah,keterangan:'Iuran '+t.periode+' - '+t.warga.nama,tanggal:new Date().toISOString().split('T')[0]}).select().single();await sb.from('iuran_tagihan').update({status:'lunas',tanggal_bayar:new Date().toISOString().split('T')[0],kas_id:k.id}).eq('id',id);loadWarga()}
+async function hapusTagihan(id){if(confirm('Hapus?')){await sb.from('iuran_tagihan').delete().eq('id',id);loadWarga()}}
+async function loadKeuangan(){const k=await sb.from('kas_transaksi').select('*').order('tanggal',{ascending:false}).limit(50);tK.querySelector('tbody').innerHTML=k.data.map(x=>`<tr><td>${x.tanggal}</td><td>${x.jumlah>0?'Masuk':'Keluar'}</td><td>Rp ${Math.abs(x.jumlah).toLocaleString('id-ID')}</td><td>${x.keterangan}</td><td>${x.bukti_url?`<a href="${x.bukti_url}" target="_blank">Lihat</a>`:'-'}</td></tr>`).join('')}
+async function addKas(){const j=kJenis.value==='masuk'?+kJumlah.value:-Math.abs(+kJumlah.value);await sb.from('kas_transaksi').insert({jumlah:j,keterangan:kKet.value,tanggal:kTanggal.value||new Date().toISOString().split('T')[0],kategori_id:1});kJumlah.value='';kKet.value='';loadKeuangan();loadAll()}
+async function loadPengumuman(){const p=await sb.from('pengumuman').select('*').order('created_at',{ascending:false}).limit(30);tP.querySelector('tbody').innerHTML=p.data.map(x=>`<tr><td>${new Date(x.created_at).toLocaleDateString('id-ID')}</td><td>${x.judul}</td><td>${x.kategori}</td><td><button onclick="hapusPengumuman(${x.id})" style="background:#dc2626">Hapus</button></td></tr>`).join('')}
+async function addPengumuman(){await sb.from('pengumuman').insert({judul:pJudul.value,isi:pIsi.value,kategori:pKat.value});pJudul.value='';pIsi.value='';loadPengumuman()}
+async function hapusPengumuman(id){if(confirm('Hapus?')){await sb.from('pengumuman').delete().eq('id',id);loadPengumuman()}}
+async function loadSurat(){const s=await sb.from('surat').select('*').order('tanggal_pengajuan',{ascending:false}).limit(50);tS.querySelector('tbody').innerHTML=s.data.map(x=>`<tr><td>${x.tanggal_pengajuan}</td><td>${x.jenis_surat}</td><td>${x.keperluan}</td><td>${x.status}</td><td><button onclick="updateSurat(${x.id},'proses')">Proses</button> <button onclick="updateSurat(${x.id},'selesai')" style="background:#22c55e">Selesai</button></td></tr>`).join('')}
+async function updateSurat(id,st){await sb.from('surat').update({status:st}).eq('id',id);loadSurat()}
+async function loadLaporan(){const l=await sb.from('pengaduan').select('*').order('created_at',{ascending:false}).limit(50);tLap.querySelector('tbody').innerHTML=l.data.map(x=>`<tr><td>${new Date(x.created_at).toLocaleDateString('id-ID')}</td><td>${x.judul}</td><td>${x.kategori}</td><td>${x.status}</td><td><button onclick="updateLap(${x.id},'proses')">Proses</button> <button onclick="updateLap(${x.id},'selesai')" style="background:#22c55e">Selesai</button></td></tr>`).join('')}
+async function updateLap(id,st){await sb.from('pengaduan').update({status:st}).eq('id',id);loadLaporan()}
+kTanggal.value=new Date().toISOString().split('T')[0];
+</script></body></html>
